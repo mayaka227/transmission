@@ -233,6 +233,25 @@ func (c *Client) AddTorrent(args AddTorrentArg) (*Torrent, error) {
 	return t.Torrent, nil
 }
 
+// AddTorrent from local drive
+func (c *Client) AddTorrentFile(torrentfile, torrentpath string) (*Torrent, error) {
+	fileData, err := ioutil.ReadFile(torrentfile)
+	if err != nil {
+		return nil, err
+	}
+	meta := base64.StdEncoding.EncodeToString(fileData)
+
+	// 변환한 파일 트랜스미션에 추가
+	addt := AddTorrentArg{
+		DownloadDir: torrentpath,
+		Metainfo:    meta,
+	}
+	//   torrent, err := t.Add(argv[1])
+	torrent, err := c.AddTorrent(addt)
+	return torrent, err
+}
+
+
 // RemoveTorrents remove torrents
 func (c *Client) RemoveTorrents(torrents []*Torrent, removeData bool) error {
 	ids := make([]int, len(torrents))

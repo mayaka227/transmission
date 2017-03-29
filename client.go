@@ -3,6 +3,7 @@ package transmission
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -241,12 +242,10 @@ func (c *Client) AddTorrentFile(torrentfile, torrentpath string) (*Torrent, erro
 	}
 	meta := base64.StdEncoding.EncodeToString(fileData)
 
-	// 변환한 파일 트랜스미션에 추가
 	addt := AddTorrentArg{
 		DownloadDir: torrentpath,
 		Metainfo:    meta,
 	}
-	//   torrent, err := t.Add(argv[1])
 	torrent, err := c.AddTorrent(addt)
 	return torrent, err
 }

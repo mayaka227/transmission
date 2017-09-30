@@ -4,6 +4,7 @@ import (
 	"github.com/swatkat/gotrntmetainfoparser"
 	"encoding/base64"
 	"io/ioutil"
+	"fmt"
 )
 
 func (c *Client) AddTorrentFile(torrentfile, torrentpath string) (*Torrent, error) {

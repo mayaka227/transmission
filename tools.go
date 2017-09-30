@@ -1,6 +1,7 @@
 package transmission
 
 import (
+	"github.com/swatkat/gotrntmetainfoparser"
 	"encoding/base64"
 	"io/ioutil"
 )
@@ -20,6 +21,39 @@ func (c *Client) AddTorrentFile(torrentfile, torrentpath string) (*Torrent, erro
 	torrent, err := c.AddTorrent(addt)
 
 	return torrent, err
+}
+
+func (c *Client) AddTrackers(torrentfile string) (*Torrent, error) {
+	name, trackers := getInfoFromTorrentFile(torrentfile)
+	torrents, err := c.GetTorrents()
+	if err2 != nil {
+		return nil, err
+	}
+	for _, torrent := range torrents {
+		if torrent.Name == name {
+			for _, x := range trackers {
+				y := []string{x}
+				sArg := SetTorrentArg{
+					TrackerAdd: y,
+				}
+				torrent.Set(sArg)
+			}
+			return torrent, nil
+		}
+	}
+	return nil,fmt.Errorf("Torrent not exists")
+}
+
+func getInfoFromTorrentFile(filename string) (string, []string) {
+	var a gotrntmetainfoparser.MetaInfo
+	a.ReadTorrentMetaInfoFile(filename)
+	var tracker []string
+	for _, x := range a.AnnounceList {
+		for _, y := range x {
+			tracker = append(tracker, y)
+		}
+	}
+	return a.Info.Name, tracker
 }
 
 func (c *Client) RemoveTorrent(torrent *Torrent, removeData bool) error {
